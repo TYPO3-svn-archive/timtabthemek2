@@ -1,0 +1,315 @@
+#
+#	$Id$
+#
+
+
+# tt_news
+plugin.tt_news {
+
+  templateFile = {$page.file.template_tt_news}
+  
+  singlePid = {$plugin.tx_timtab.blogPid}
+  
+  displayList.date_stdWrap.strftime = %d. %B %Y
+  displaySingle.date_stdWrap.strftime =  %A, %B %d, %Y at %I:%M %p
+
+  dontUseBackPid = 1
+  catTextMode = 3
+  newsAmenuUserFunc =
+  useHRDates = 1
+  useHRDatesSingle = 1
+  useSubCategories = 1
+  limit = 10
+  latestLimit = 6
+  
+  displayCatMenu {
+    mode = timtab
+    catmenu_stdWrap.wrap = <h2><em>Categories</em></h2>|
+  }
+
+  _LOCAL_LANG.default {
+    archiveHeader = Archives
+    latestHeader = Most Recent Posts
+  }
+}
+
+[globalVar = GP:tx_ttnews|year > 0][globalVar = GP:tx_ttnews|ps > 0]
+plugin.tt_news.archive = 1
+plugin.tt_news.limit = 100
+[global]
+
+# posts list
+temp.list < plugin.tt_news 
+temp.list {
+  code >
+  code = LIST
+}
+
+#post single view
+temp.single < plugin.tt_news 
+temp.single {
+  code >
+  code = SINGLE
+}
+
+# archives
+temp.archives < plugin.tt_news 
+temp.archives {
+  code >
+  code = AMENU
+}
+
+# latest / recent
+temp.latest < plugin.tt_news 
+temp.latest {
+  code >
+  code = LATEST
+}
+
+# categories
+temp.categories < plugin.tt_news 
+temp.categories {
+  code >
+  code = CATMENU
+}
+
+
+# timtab category menu
+plugin.tx_timtab.displayCatMenu {
+  wrap = <ul class="categories">|</ul>
+  hierarchical = 1
+  showCount = 0
+}
+
+
+# ve_guestbook
+plugin.tx_veguestbook_pi1 {
+
+  templateFile = {$page.file.template_ve_guestbook}
+  limit = 1000
+  
+  _LOCAL_LANG.default {
+    form_firstname = Name
+    form_submit = Submit Comment
+    form_email = Mail
+    form_homepage = Website
+  }
+
+  _CSS_DEFAULT_STYLE =  
+}
+
+# pagenav, default: 2 levels
+temp.pagenav_l1 = HMENU
+temp.pagenav_l1.wrap = <ul class="menu">|</ul>
+temp.pagenav_l1.1 = TMENU
+temp.pagenav_l1.1 {
+  wrap =
+  expAll = 1
+  noBlur = 1
+
+  NO {
+    allWrap = <li class="page_item">|</li>
+    ATagTitle.field = abstract // description // title
+  }
+  
+  ACT = 1
+  ACT {
+    allWrap = <li class="current_page_item">|</li>
+    ATagTitle.field = abstract // description // title
+  }
+}
+
+temp.pagenav_l2 = HMENU
+temp.pagenav_l2.wrap = <ul>|</ul>
+temp.pagenav_l2.entryLevel = 1
+temp.pagenav_l2.1 = TMENU
+temp.pagenav_l2.1 {
+  wrap =
+  noBlur = 1
+  
+  NO {
+    allWrap = <li class="page_item">|</li>
+    ATagTitle.field = abstract // description // title
+  }
+  
+  ACT = 1
+  ACT {
+    allWrap = <li class="page_item current_page_item">|</li>
+    ATagTitle.field = abstract // description // title
+  }
+}
+
+# filling markers
+temp.blogTitle = TEXT
+temp.blogTitle.value = {$plugin.tx_timtab.title}
+temp.blogTagline = TEXT
+temp.blogTagline.value = {$plugin.tx_timtab.tagline}
+temp.blogHomepage = TEXT
+temp.blogHomepage.value = {$plugin.tx_timtab.homepage}
+
+
+# timtab Blogroll
+temp.blogRoll =< plugin.tx_timtab_pi1
+temp.blogRoll {
+  header_stdWrap.wrap = <h2>Blogroll</h2>|
+  dontWrapInDiv = 1
+  listClass = links
+}
+
+#Labels
+temp.label = USER
+temp.label {
+  userFunc = tx_timtabthemek2_fe->getLabel
+  label = 
+}
+
+temp.labellatest < temp.label
+temp.labellatest.label = latest
+
+temp.labelmeta < temp.label
+temp.labelmeta.label = meta
+
+temp.labelsubpages < temp.label
+temp.labelsubpages.label = subpages
+
+
+# AJAX
+[globalVar = GP:tx_ttnews|tt_news > 0]
+temp.ajax = USER
+temp.ajax {
+  userFunc = tx_timtabthemek2_fe->addJS
+}
+[else]
+temp.ajax = TEXT
+temp.ajax.value = 
+[global]
+
+#page title
+temp.pagetitle = TEXT
+temp.pagetitle.field = title
+
+# page cObject
+page >
+page = PAGE
+page {
+  typeNum = 0
+  includeLibs.tx_timtabthemek2 = EXT:timtab_theme_k2/class.tx_timtabthemek2_fe.php
+
+  # <head>
+  headTag = <head profile="http://gmpg.org/xfn/11">
+  headerData {
+    10 = TEXT
+    10.value = <link rel="pingback" href="{$plugin.tx_timtab.homepage}/?type=200" />
+    
+    20 = TEXT
+    20.value = <link rel="alternate" type="application/rss+xml" title="RSS-Feed" href="{$plugin.tx_timtab.homepage}/?type=100" />
+  }
+
+  # <body>
+  bodyTag = <body>
+  10 = TEMPLATE
+  10 {
+    template = FILE
+    template.file = {$page.file.template_std}
+    
+    workOnSubpart = DOCUMENT_BODY
+  
+    marks {
+      PAGENAV_L1 < temp.pagenav_l1
+      PAGENAV_L2 < temp.pagenav_l2
+      ARCHIVES < temp.archives
+      CATEGORIES < temp.categories
+      BLOG_TITLE < temp.blogTitle
+      BLOG_TAGLINE < temp.blogTagline
+      BLOG_HOME < temp.blogHomepage
+      POSTS_LIST < temp.list
+      POST_SINGLE < temp.single
+      BLOG_CONTENT_NORMAL < styles.content.get
+      BLOG_CONTENT_RIGHT < styles.content.getRight
+      BLOG_BLOGROLL < temp.blogRoll
+      BLOG_CALENDAR < temp.calendar
+      LATEST < temp.latest
+      PAGE_TITLE < temp.pagetitle
+      
+      K2_SUBPAGES < temp.labelsubpages
+      K2_LATEST < temp.labellatest
+      K2_META < temp.labelmeta
+      K2_AJAX < temp.ajax
+    } # end marks
+  } # end page.10 (TEMPLATE)
+  
+  # add some 'dynamic' css
+  includeCSS.file001 = {$page.file.css}
+  includeCSS.file002 = {$page.file.cssScheme}
+  CSS_inlineStyle (
+    
+  )
+  
+  config {
+    # get XHTML compliant output
+    xmlprologue = none
+    doctype = xhtml_trans
+    xhtml_cleaning = all
+  
+    # Spamprotection
+    spamProtectEmailAddresses = -3
+    spamProtectEmailAddresses_atSubst = <span>&#064;</span>
+  
+    # targets
+    intTarget = {$PAGE_TARGET}
+    extTarget = _blank
+  
+    # externalize js and css
+    removeDefaultJS = external
+
+    # advertise that we can receive Pingback
+    #additionalHeaders = X-Pingback: {$plugin.tx_timtab.homepage}/?type=200
+
+    # Admin Panel
+    admPanel = 1
+  } # end page.config
+  
+} # end page (PAGE)
+
+#remove cleargif
+content.headerSpace = 0|0
+content.space = 0|0
+
+# homepage
+[globalVar = TSFE:id = {$plugin.tx_timtab.homePid}]
+page.10.template.file = {$page.file.template_main}
+[global]
+
+# single view
+[globalVar = TSFE:id = {$plugin.tx_timtab.blogPid}]
+plugin.tx_timtab.gravatar.size = 23
+
+page.10.template.file = {$page.file.template_single}
+
+temp.ajax = USER
+temp.ajax {
+  userFunc = tx_timtabthemek2_fe->addJS
+}
+[else]
+temp.ajax = TEXT
+temp.ajax.value = 
+[global]
+
+
+
+#AJAX
+k2_ajax = PAGE
+k2_ajax {
+  typeNum = 300
+  includeLibs.tx_timtabthemek2 = EXT:timtab_theme_k2/class.tx_timtabthemek2_ajax.php
+
+  10 = USER_INT
+  10.userFunc = tx_timtabthemek2_ajax->main
+  
+  config {
+    disableAllHeaderCode = 1
+    xhtml_cleaning = 0
+    admPanel = 0
+    debug = 0
+  }
+}

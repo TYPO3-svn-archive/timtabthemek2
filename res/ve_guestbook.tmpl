@@ -1,0 +1,205 @@
+<!-- 
+	This is the template for ve_guestbook in the kubrick template
+
+	$Id: kubrick_ve_guestbook.tmpl,v 1.6 2005/08/23 22:26:48 ingorenner Exp $ 
+
+-->
+
+<!-- ###TEMPLATE_FORM### begin
+
+The guestbook form for a new frontend entry
+
+Following markers will be substituted:
+
+###FORM_FIRSTNAME### 	Firstname
+###FORM_SURNAME###		Surname
+###FORM_EMAIL### 		E-Mail
+###FORM_HOMEPAGE### 	Website
+###FORM_PLACE### 		Place
+###FORM_ENTRY### 		Message
+
+-->
+<div id="loading" style="display: none;">
+		###K2_POSTING_COMMENT###... 	
+</div>
+
+<h4>###BLOG_LEAVE_REPLY###</h4>
+
+<div class="comments" style="padding-top: 0px;">
+<form id="commentform" 
+	action="###ACTION_URL###" 
+	method="post" 
+	onsubmit="new Ajax.Updater(
+				{success: 'commentlist'}, 
+				'###K2_AJAX_URL###', 
+				{asynchronous: true, 
+				evalScripts: true, 
+				insertion: Insertion.Bottom, 
+				onComplete: function(request){complete(request)}, 
+				onFailure: function(request){failure(request)}, 
+				onLoading: function(request){loading()}, 
+				parameters: Form.serialize(this)}
+			); 
+			return false;" >
+
+<div id="error" style="display: none;">
+		###K2_COMMENT_ERROR### 		 	
+</div>
+
+###K2_KNOWN_B###
+<p>
+<small>
+###K2_WELCOME_BACK###
+ 
+
+    <strong> ###VALUE_FIRSTNAME### </strong>
+
+ 			
+
+    <span id="showinfo"> (
+
+        <a href="javascript:ShowUtils();"> Change </a>
+
+    ) </span>
+
+ 			
+
+    <span id="hideinfo" style="display: none;"> (
+
+        <a href="javascript:HideUtils();"> Close </a>
+
+    ) </span>
+
+</small>
+</p>
+###K2_KNOWN_E###
+
+<div id="authorinfo" ###K2_KNOWN_DISPLAY###>
+	<p>
+		<input type="text" name="author" id="author" value="###VALUE_FIRSTNAME###" size="22" tabindex="1" />
+		<label for="author"><small><strong>###BLOG_NAME###</strong> ###K2_REQUIRED###</small></label> 	
+	</p>
+	
+	<p>
+		<input type="text" name="email" id="email" value="###VALUE_EMAIL###" size="22" tabindex="2" />
+		<label for="email"><small><strong>###BLOG_MAIL###</strong> ###K2_HIDDEN###</small></label>
+	</p>
+	
+	<p>
+		<input type="text" name="url" id="url" value="###VALUE_HOMEPAGE###" size="22" tabindex="3" />
+		<label for="url"><small><strong>###BLOG_HOMEPAGE###</strong></small></label>
+	</p>
+</div>
+
+<p>
+	<textarea name="comment" id="comment" cols="100" rows="10" tabindex="4">###VALUE_ENTRY###</textarea>
+</p>
+
+<p> 	
+	<input type="hidden" name="id" value="###PID###" />
+	<input type="hidden" name="submitted" value="1" />
+	<input type="hidden" name="tx_timtab[remember_visitor]" value="1" />
+	<input type="hidden" name="tt_news_id" value="###K2_TTNEWS###" />
+				
+	<input name="submit" id="submit" tabindex="5" value="###FORM_SUBMIT###" type="submit">
+ 				
+	
+ 				
+	<br class="clear"> 			
+</p>
+</form>
+
+</div>
+<!-- ###TEMPLATE_FORM### end -->
+
+<!-- ###TEMPLATE_LIST### begin
+Teasing the gustbook
+
+Following markers will be substituted:
+
+###GUESTBOOK_FIRSTNAME### 	Firstname (Entry)
+###GUESTBOOK_SURNAME###		Surname (Entry)
+###GUESTBOOK_EMAIL_URL### 	E-Mail URL (Entry)
+###GUESTBOOK_EMAIL### 		E-Mail including spam protection if activated (Entry)
+###GUESTBOOK_HOMEPAGE### 	Website (Entry)
+###GUESTBOOK_PLACE### 		Place (Entry)
+###GUESTBOOK_ENTRY### 		Message (Entry)
+
+And the field names...
+
+###FORM_FIRSTNAME### 		Firstname
+###FORM_SURNAME###			Surname
+###FORM_EMAIL### 			E-Mail
+###FORM_HOMEPAGE### 		Website
+###FORM_PLACE### 			Place
+###FORM_ENTRY### 			Message
+-->
+<hr />
+
+<div class="comments" id="comments">
+	<h4><a name="comments"></a> ###BLOG_COMMENTS_COUNT### ###BLOG_RESPONSES### to &#8220;###BLOG_POST_TITLE###&#8221;</h4>
+	
+	<div class="metalinks">
+		<span class="metalink">
+			<a href="###BLOG_TRACKBACK_URL###" title="###K2_TB_DESC###">Trackback</a>
+		</span>				
+	</div>	
+
+
+	<ol class="commentlist" id="commentlist">
+<!-- ###CONTENT### begin
+	  This is the part of the template substituted with the list of entries: 
+-->
+
+	<!-- ###ENTRY### begin 
+		Template for a single item 
+	-->
+	<li class="item" id="comment-###BLOG_COMMENT_NUM###">
+		<a name="comment-###BLOG_COMMENT_NUM###"></a>
+		###BLOG_COMMENT_GRAVATAR###
+	
+		<a name="#comment-###BLOG_COMMENT_NUM###" class="counter" title="###K2_COMMENT_PERMALINK###">
+			###BLOG_COMMENT_NUM###
+		</a>
+		
+		<span class="commentauthor" style="font-weight: bold;">
+			###BLOG_COMMENTER_NAME###
+		</span>
+		
+		<small class="commentmetadata">
+			###GUESTBOOK_DATE###
+		</small>
+		
+		<div class="itemtext">
+			<p>###GUESTBOOK_ENTRY###</p>
+		</div>
+	</li>
+	<!-- ###ENTRY### end-->
+
+<!-- ###CONTENT###  end -->
+</ol>
+</div>
+<!-- ###TEMPLATE_LIST### end -->
+
+
+
+<!-- ###TEMPLATE_NO_ENTRIES### begin
+No entries found :-(
+
+Following markers will be substituted:
+
+###GUESTBOOK_FIRSTNAME### 	Firstname
+###GUESTBOOK_SURNAME###		Surname
+###GUESTBOOK_EMAIL_URL### 	E-Mail (URL)
+###GUESTBOOK_EMAIL### 		E-Mail including spam protection if activated
+###GUESTBOOK_HOMEPAGE### 	Website
+###GUESTBOOK_PLACE### 		Place
+###GUESTBOOK_ENTRY### 		Message
+
+-->
+<hr />
+
+
+<!-- ###TEMPLATE_NO_ENTRIES### end -->
+
+
